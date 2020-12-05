@@ -1,11 +1,6 @@
 
 import shell
 
-const (
-	auto = 'auto-workers'
-	intel = 'intel-workers'
-)
-
 fn main() {
 	mut sh := shell.new()
 	res := sh.run('cat /etc/passwd').run('grep root').drain()
