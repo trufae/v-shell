@@ -135,6 +135,18 @@ pub fn (mut s Shell)tab() &Shell {
 	return s
 }
 
+pub fn (mut s Shell)wc_c() &Shell {
+	n := s.stdout.len
+	s.stdout = '$n'
+	return s
+}
+
+pub fn (mut s Shell)wc_l() &Shell {
+	n := s.stdout.count('\n')
+	s.stdout = '$n'
+	return s
+}
+
 pub fn (mut s Shell)grep(a string) &Shell {
 	lines := s.stdout.split('\n')
 	mut res := []string{}
@@ -203,16 +215,19 @@ pub fn (mut s Shell)sed(t string) &Shell {
 		if args.len != 4 {
 			panic('invalid regex')
 		}
-		global := args[3] == 'g'
+		g_flag := args[3] == 'g'
 		k := args[1].replace('\\_', '\\/')
 		v := args[2].replace('\\_', '\\/')
-		eprintln('k:$k')
-		eprintln('v:$v')
 		mut lines := s.stdout.split('\n')
 		mut re := regex.new()
 		re.compile_opt('$k')
 		for line in lines {
-			lineres := re.replace(line, '$v')
+			lineres := if g_flag {
+				re.replace(line, '$v')
+				// line.replace('$k', '$v')
+			} else {
+				line.replace_once('$k', '$v')
+			}
 			res << lineres
 		}
 		s.stdout = res.join('\n')
@@ -259,3 +274,4 @@ pub fn (mut s Shell)getenv(v string) &Shell {
 	return s
 }
 */
+
